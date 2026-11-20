@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+
+    <h1 class="title">🌟BINGO大会🌟</h1>
+    <div class="container">
+        
+        <!-- 引いた数値 -->
+        <div class="draw">
+            {% if current_num %}
+                {{ current_num }}
+        </div>
+            {% else %}
+                -
+            {% endif %}
+
+        <!-- 数値 -->
+        <form method="POST">
+            <div class="next-btn-container">
+                    <button type="submit" name="action" value="draw" class="next-btn">次</button>
+            </div>
+        </form>
+
+        <h3 class="sub-title">↓履歴↓</h3>
+        <div class="history">
+            {% for num in drawn_num %}
+                <span class="history-val">{{ num }}</span>
+            {% endfor %}
+        </div>
+
+        <details class="check-dropdown">
+            <summary class="check-btn">確認用</summary>
+            <div class="check-window">
+                <div class="check-num-list">
+                    <!-- |sort フィルターで数値の小さい順に並び替え -->
+                    {% for num in drawn_num|sort %}
+                        <span class="check-num">{{ num }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </details>
+        
+
+        <!-- リセット -->
+        <form method="POST">
+            <button type="submit" name="action" value="reset" class="reset-btn">
+                リセット
+            </button>
+        </form>
+
+    </div>
+
+
+
+</body>
+</html>

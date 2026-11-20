@@ -1,0 +1,104 @@
+@charset "utf-8";
+
+* {
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    width: auto;
+}
+
+.title {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.draw {
+    text-align: center;
+    margin-top: 80px;
+    margin-bottom: 80px;
+    font-size: 200px;
+}
+
+.next-btn-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.next-btn {
+    width: 150px;
+    height: auto;
+    font-size: 50px;
+}
+
+.sub-title {
+    text-align: center;
+}
+
+.history {
+    display: flex;
+    flex-direction: row-reverse; /* 最新（左）から古（右）へ並べる */
+    justify-content: flex-end;   /* 左詰めで配置 */
+    overflow: hidden;            /* 指定幅を超えた一番右の古い数字を非表示にする */
+    white-space: nowrap;         /* 折り返さず1行に固定 */
+    gap: 8px;
+    max-width: 100%;             /* 画面や親要素の幅一杯に制限（必要に応じて 300px 等に変更可） */
+    font-size: 100px;
+}
+
+.history-val {
+    flex-shrink: 0;              /* 数字が潰れないようにサイズを固定 */
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+/* プルダウン全体の配置 */
+.check-dropdown {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* ボタン（summary）のデザインと矢印の非表示化 */
+/* .check-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none; /* デフォルトの矢印を非表示 (Chrome / Edge / Firefox)
+} */
+
+.check-btn::-webkit-details-marker {
+    display: none; /* デフォルトの矢印を非表示 (Safari) */
+}
+
+.check-btn:hover {
+    background-color: #5a6268;
+}
+
+/* 開いた時に表示されるウィンドウ領域 */
+.check-window {
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-height: 250px;
+    overflow-y: auto; /* 数字が多くなったら内部スクロール */
+}
+
+/* 数字の並び */
+.check-num-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: left;
+    margin-top: 10px;
+}
+
+.check-num {
+    background: #e9ecef;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+}
