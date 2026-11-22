@@ -1,129 +1,678 @@
-
-@charset "utf-8";
+@charset "UTF-8";
 
 * {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    width: auto;
+    box-sizing: border-box;
 }
 
-.title {
+body {
+    margin: 0;
+    padding: 20px 12px;
+    background: #100d19;
+    color: #fff;
+    font-family: system-ui, "Noto Sans JP", sans-serif;
+}
+
+.cabinet {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #4a1528,
+            #180f22 35%,
+            #2c1423 70%,
+            #100d19
+        );
+
+    border: 3px solid #b98a43;
+
+    box-shadow:
+        inset 0 0 0 2px #f5d58a33,
+        inset 0 0 35px #ed315322;
+}
+
+
+/* BINGOロゴ */
+
+.marquee {
+    position: relative;
+    padding: 17px 8px;
     text-align: center;
-    margin-top: 50px;
+
+    border: 2px solid #d9a94e;
+
+    background:
+        linear-gradient(
+            90deg,
+            #4c142b,
+            #9c2538,
+            #4c142b
+        );
+
+    box-shadow:
+        0 0 18px #e52c5855,
+        inset 0 0 14px #ffbd5a44;
 }
 
-.draw {
-    text-align: center;
-    margin-top: 80px;
-    margin-bottom: 80px;
-    font-size: 200px;
-    font-weight: bold;
+.marquee::before,
+.marquee::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+    background: #ffe9a4;
+
+    box-shadow: 0 0 9px #ffe9a4;
 }
 
-/* 抽選中の数字 */
-.draw.is-spinning {
-    opacity: 0.65;
-    transform: scale(0.95);
+.marquee::before {
+    left: 12px;
 }
 
-/* 最終結果の表示演出 */
-.draw.bingo-pop {
-    animation: bingo-pop 0.55s ease-out;
+.marquee::after {
+    right: 12px;
 }
 
-@keyframes bingo-pop {
+.logo {
+    margin: 0;
+
+    font-family: Georgia, serif;
+    font-size: clamp(38px, 10vw, 58px);
+    font-weight: 1000;
+    font-style: italic;
+
+    letter-spacing: 0.12em;
+    line-height: 1;
+
+    color: #fff0b6;
+
+    -webkit-text-stroke: 1px #f9d77b;
+
+    text-shadow:
+        0 2px #a55a28,
+        0 4px #5e202a,
+        0 0 16px #ffc65c,
+        0 0 28px #ffb33d;
+}
+
+
+/* ランプ */
+
+.lamps {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+
+    padding: 12px 0;
+}
+
+.lamp {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #9c3848;
+    box-shadow: 0 0 5px #d94d5d;
+}
+
+.lamp:nth-child(odd) {
+    background: #ffdc82;
+    box-shadow: 0 0 10px #ffca54;
+}
+
+
+/* 数字表示 */
+
+.machine {
+    padding: 8px;
+
+    border: 2px solid #c18e42;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e5bd68,
+            #5d3426 15%,
+            #241525 40%,
+            #8e572f 85%,
+            #e5bd68
+        );
+}
+
+.screen {
+    position: relative;
+
+    min-height: 235px;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            #49203a,
+            #1c1329 70%
+        );
+
+    border: 1px solid #e8c57d;
+}
+
+.screen::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent 0 4px,
+            #ffffff08 5px
+        );
+
+    pointer-events: none;
+}
+
+.screen::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    opacity: 0;
+
+    background:
+        radial-gradient(
+            circle,
+            #fff8c7 0%,
+            #ffd15a55 25%,
+            transparent 68%
+        );
+
+    pointer-events: none;
+}
+
+.screen.flash::after {
+    animation: flash 0.7s ease-out;
+}
+
+.number {
+    position: relative;
+    z-index: 1;
+
+    font-size: clamp(112px, 30vw, 168px);
+    line-height: 1.08;
+
+    font-weight: 1000;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.06em;
+
+    color: #fff7dc;
+
+    text-shadow:
+        0 3px #b86c31,
+        0 6px #722b39,
+        0 0 20px #ffcf69;
+}
+
+.number.spinning {
+    color: #ffe6a0;
+
+    text-shadow:
+        0 0 18px #fff0a4;
+}
+
+.number.pop {
+    animation:
+        jackpot 0.72s cubic-bezier(0.15, 0.9, 0.25, 1.35);
+}
+
+@keyframes jackpot {
+
     0% {
-        transform: scale(0.5);
+        transform: scale(0.25) rotate(-10deg);
         opacity: 0;
+        filter: brightness(2);
     }
 
-    60% {
-        transform: scale(1.2);
+    55% {
+        transform: scale(1.22) rotate(4deg);
         opacity: 1;
+        filter: brightness(1.8);
+    }
+
+    78% {
+        transform: scale(0.94) rotate(-2deg);
     }
 
     100% {
         transform: scale(1);
-        opacity: 1;
+        filter: brightness(1);
     }
 }
 
-.next-btn-container {
-    text-align: center;
-    margin-bottom: 30px;
+@keyframes flash {
+
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
 
-.next-btn {
-    width: 150px;
-    height: auto;
-    font-size: 50px;
+
+/* 紙吹雪 */
+
+.confetti {
+    position: absolute;
+    z-index: 4;
+
+    top: 50%;
+    left: 50%;
+
+    width: 8px;
+    height: 12px;
+
+    pointer-events: none;
+
+    animation:
+        burst 1.25s ease-out forwards;
+}
+
+@keyframes burst {
+
+    0% {
+        transform: translate(0, 0) rotate(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translate(var(--x), var(--y))
+            rotate(720deg);
+
+        opacity: 0;
+    }
+}
+
+
+/* 抽選ボタン */
+
+.button-container {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 20px;
+}
+
+.spin-btn {
+    width: 100%;
+    max-width: 350px;
+
+    padding: 15px 18px;
+
+    border-radius: 7px;
+
+    border: 2px solid #ffe5a0;
+    border-bottom: 5px solid #8d272d;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ed5a50,
+            #a71936
+        );
+
+    color: #fff8e4;
+
+    font-size: 20px;
+    font-weight: 1000;
+    letter-spacing: 0.12em;
+
+    text-shadow: 0 2px #85222a;
+
+    box-shadow:
+        0 0 18px #ed364d55;
+
     cursor: pointer;
 }
 
-/* 抽選演出中のボタン */
-.next-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.spin-btn:disabled {
+    opacity: 0.55;
+    cursor: wait;
 }
 
-.sub-title {
-    text-align: center;
-}
 
-.history {
+/* 抽選履歴 */
+
+.history-header {
     display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
-    overflow: hidden;
-    white-space: nowrap;
-    gap: 8px;
-    max-width: 100%;
-    font-size: 100px;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 28px;
+    margin-bottom: 12px;
 }
 
-.history-val {
-    flex-shrink: 0;
-    margin-left: 50px;
-    margin-right: 50px;
+.history-title {
+    font-size: 15px;
+    font-weight: 900;
+    color: #ffe4a0;
 }
 
-/* プルダウン全体の配置 */
-.check-dropdown {
-    margin-top: 20px;
-    text-align: center;
+.counter,
+.modal-counter {
+    color: #f7c76d;
+    font-size: 14px;
+    font-weight: 900;
 }
 
-/* summaryのデフォルト矢印を非表示 */
-.check-btn::-webkit-details-marker {
-    display: none;
+.history-panel {
+    padding: 14px;
+
+    border: 1px solid #986d48;
+
+    background: #211827;
 }
 
-.check-btn:hover {
-    background-color: #5a6268;
-}
-
-/* 開いた時に表示されるウィンドウ領域 */
-.check-window {
-    margin-top: 10px;
-    padding: 15px;
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    max-height: 250px;
-    overflow-y: auto;
-}
-
-/* 数字の並び */
-.check-num-list {
+.history-list {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    justify-content: left;
-    margin-top: 10px;
+
+    min-height: 40px;
 }
 
-.check-num {
-    background: #e9ecef;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-weight: bold;
+.empty-history {
+    align-self: center;
+
+    color: #fef3c8a0;
+    font-size: 12px;
+}
+
+.chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 25%,
+            #fff2c0,
+            #d99c43 75%
+        );
+
+    color: #401e2a;
+
+    font-size: 14px;
+    font-weight: 1000;
+
+    box-shadow: 0 2px 7px #0008;
+}
+
+.chip.latest {
+    background:
+        radial-gradient(
+            circle at 35% 25%,
+            #ffd4d2,
+            #df4250 75%
+        );
+
+    color: #fff;
+}
+
+
+/* 全履歴ボタン */
+
+.secondary-button {
+    width: 100%;
+
+    margin-top: 12px;
+    padding: 11px;
+
+    border: 1px solid #c59b56;
+
+    background: #32202a;
+    color: #ffe6a0;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+/* リセット */
+
+.reset-container {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 16px;
+}
+
+.reset-button {
+    padding: 8px 15px;
+
+    background: #29202a;
+
+    border: 1px solid #795b54;
+
+    color: #e8d8c6;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+/* 全履歴モーダル */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: 9999;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px;
+
+    background: #090711ed;
+}
+
+.overlay.open {
+    display: flex;
+}
+
+.modal {
+    width: 100%;
+    max-width: 520px;
+
+    max-height: 85%;
+
+    overflow: auto;
+
+    padding: 17px;
+
+    background: #211827;
+
+    border: 2px solid #b98a43;
+
+    box-shadow: 0 0 35px #000a;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.modal-title {
+    color: #ffe4a0;
+
+    font-size: 18px;
+    font-weight: 900;
+}
+
+
+/* 凡例 */
+
+.legend {
+    display: flex;
+    gap: 16px;
+
+    margin-top: 12px;
+
+    color: #cbd5e1;
+
+    font-size: 12px;
+}
+
+.legend span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-color {
+    display: inline-block;
+
+    width: 12px;
+    height: 12px;
+
+    border-radius: 2px;
+}
+
+.legend-color.done {
+    background: #fcd783;
+}
+
+.legend-color.not-done {
+    background: #334155;
+}
+
+
+/* 1〜75の数字一覧 */
+
+.all-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 7px;
+
+    margin-top: 15px;
+}
+
+.all-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    aspect-ratio: 1;
+
+    border: 1px solid #66505a;
+
+    background: #171421;
+
+    color: #766b77;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.all-cell.done {
+    background:
+        linear-gradient(
+            145deg,
+            #ffe5a0,
+            #d99c43
+        );
+
+    color: #421e2b;
+
+    border-color: #ffda82;
+
+    box-shadow: 0 0 7px #e2ae4b55;
+}
+
+.all-cell.last {
+    background:
+        linear-gradient(
+            145deg,
+            #ffd4d2,
+            #df4250
+        );
+
+    color: white;
+
+    border-color: #ffc2a7;
+}
+
+
+/* 閉じるボタン */
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 20px;
+}
+
+.close-button {
+    padding: 9px 18px;
+
+    border: 1px solid #c59b56;
+
+    color: #ffe6a0;
+
+    background: #38232e;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+/* スマートフォン */
+
+@media (max-width: 420px) {
+
+    body {
+        padding: 12px 8px;
+    }
+
+    .cabinet {
+        padding: 10px;
+    }
+
+    .screen {
+        min-height: 205px;
+    }
+
 }

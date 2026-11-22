@@ -1,146 +1,334 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BINGO大会</title>
+
+    <title>BINGO</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
-    <h1 class="title">🌟BINGO大会🌟</h1>
+<div class="cabinet">
 
-    <div class="container">
+    <div class="marquee">
+        <h1 class="logo">BINGO</h1>
+    </div>
 
-        <!-- 引いた数値 -->
-        <div
-            class="draw"
-            id="draw-display"
-            data-final="{{ current_num if current_num is not none else '' }}"
-            data-min="{{ min_val }}"
-            data-max="{{ max_val }}"
-            data-animate="{{ 'true' if animate else 'false' }}"
-        >
-            {% if current_num is not none %}
-                {{ current_num }}
-            {% else %}
-                -
-            {% endif %}
-        </div>
+    <div class="lamps">
+        {% for i in range(9) %}
+            <i class="lamp"></i>
+        {% endfor %}
+    </div>
 
-        <!-- 次の数字を引く -->
-        <form method="POST" id="draw-form">
-            <div class="next-btn-container">
-                <button
-                    type="submit"
-                    name="action"
-                    value="draw"
-                    class="next-btn"
-                    id="next-button"
-                >
-                    次
-                </button>
+    <div class="machine">
+        <div class="screen" id="screen">
+
+            <div
+                class="number"
+                id="number"
+                data-result="{{ current_num if current_num is not none else '' }}"
+                data-animate="{{ 'true' if animate else 'false' }}"
+            >
+                {% if current_num is not none %}
+                    {{ current_num }}
+                {% else %}
+                    ？
+                {% endif %}
             </div>
-        </form>
 
-        <h3 class="sub-title">↓履歴↓</h3>
-
-        <!-- 抽選履歴 -->
-        <div class="history">
-            {% for num in drawn_num %}
-                <span class="history-val">{{ num }}</span>
-            {% endfor %}
         </div>
+    </div>
 
-        <!-- 確認用 -->
-        <details class="check-dropdown">
-            <summary class="check-btn">確認用</summary>
+    <form method="POST" id="draw-form">
+        <input type="hidden" name="action" value="draw">
 
-            <div class="check-window">
-                <div class="check-num-list">
-                    <!-- 数字を小さい順に並び替え -->
-                    {% for num in drawn_num|sort %}
-                        <span class="check-num">{{ num }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-        </details>
-
-        <!-- リセット -->
-        <form method="POST">
+        <div class="button-container">
             <button
                 type="submit"
-                name="action"
-                value="reset"
-                class="reset-btn"
+                class="spin-btn"
+                id="next-button"
             >
-                リセット
+                抽選する！
             </button>
-        </form>
+        </div>
+    </form>
+
+    <div class="history-header">
+        <div class="history-title">抽選履歴</div>
+
+        <div class="counter">
+            {{ drawn_num|length }} / {{ max_val - min_val + 1 }}
+        </div>
+    </div>
+
+    <div class="history-panel">
+        <div class="history-list">
+
+            {% if drawn_num %}
+                {% for num in drawn_num|reverse %}
+                    <span class="chip {% if loop.first %}latest{% endif %}">
+                        {{ num }}
+                    </span>
+                {% endfor %}
+            {% else %}
+                <span class="empty-history">
+                    まだ数字はありません
+                </span>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <button
+        type="button"
+        class="secondary-button"
+        id="open-history"
+    >
+        全履歴を見る　⌄
+    </button>
+
+    <form method="POST" class="reset-container">
+        <button
+            type="submit"
+            name="action"
+            value="reset"
+            class="reset-button"
+        >
+            リセット
+        </button>
+    </form>
+
+</div>
+
+
+<!-- 全履歴モーダル -->
+<div class="overlay" id="history-overlay">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div class="modal-title">
+                全履歴
+            </div>
+
+            <div class="modal-counter">
+                {{ drawn_num|length }} / {{ max_val - min_val + 1 }}
+            </div>
+
+        </div>
+
+        <div class="legend">
+
+            <span>
+                <i class="legend-color done"></i>
+                抽選済み
+            </span>
+
+            <span>
+                <i class="legend-color not-done"></i>
+                未抽選
+            </span>
+
+        </div>
+
+        <div class="all-grid">
+
+            {% for num in range(min_val, max_val + 1) %}
+
+                <div class="all-cell
+                    {% if num in drawn_num %}done{% endif %}
+                    {% if drawn_num and num == drawn_num[-1] %}last{% endif %}
+                ">
+                    {{ num }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="close-button"
+                id="close-history"
+            >
+                閉じる
+            </button>
+
+        </div>
 
     </div>
 
-    <script>
-        const display = document.getElementById('draw-display');
-        const nextButton = document.getElementById('next-button');
+</div>
 
-        // 今回のページ表示で抽選演出を行うか確認
-        if (display.dataset.animate === 'true') {
 
-            const finalNumber = Number(display.dataset.final);
-            const minNumber = Number(display.dataset.min);
-            const maxNumber = Number(display.dataset.max);
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-            // 数字として正しく取得できた場合のみ演出する
-            if (Number.isFinite(finalNumber)) {
+    const numberElement = document.getElementById("number");
+    const screen = document.getElementById("screen");
+    const nextButton = document.getElementById("next-button");
 
-                // 演出中はボタンを無効化
-                nextButton.disabled = true;
+    const overlay = document.getElementById("history-overlay");
+    const openHistory = document.getElementById("open-history");
+    const closeHistory = document.getElementById("close-history");
 
-                display.classList.add('is-spinning');
 
-                let count = 0;
+    // 全履歴を開く
+    openHistory.addEventListener("click", () => {
+        overlay.classList.add("open");
+    });
 
-                const totalSteps = 28;
-                let delay = 35;
 
-                function spin() {
+    // 全履歴を閉じる
+    closeHistory.addEventListener("click", () => {
+        overlay.classList.remove("open");
+    });
 
-                    // 仮の数字をランダムに表示
-                    const randomNumber =
-                        Math.floor(
-                            Math.random() * (maxNumber - minNumber + 1)
-                        ) + minNumber;
 
-                    display.textContent = randomNumber;
-
-                    count++;
-
-                    // 最後まで到達したら抽選結果を表示
-                    if (count >= totalSteps) {
-
-                        display.textContent = finalNumber;
-
-                        display.classList.remove('is-spinning');
-                        display.classList.add('bingo-pop');
-
-                        nextButton.disabled = false;
-
-                        return;
-                    }
-
-                    // 徐々に減速させる
-                    delay *= 1.09;
-
-                    setTimeout(spin, delay);
-                }
-
-                // 演出開始
-                spin();
-            }
+    // モーダルの外側をクリックして閉じる
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+            overlay.classList.remove("open");
         }
-    </script>
+    });
+
+
+    // 紙吹雪エフェクト
+    function createConfetti() {
+
+        const colors = [
+            "#ffe5a0",
+            "#ff5366",
+            "#ffffff",
+            "#e7a5ff",
+            "#ffbd58"
+        ];
+
+        for (let i = 0; i < 48; i++) {
+
+            const particle = document.createElement("i");
+
+            particle.className = "confetti";
+
+            particle.style.background =
+                colors[i % colors.length];
+
+            particle.style.setProperty(
+                "--x",
+                `${Math.random() * 480 - 240}px`
+            );
+
+            particle.style.setProperty(
+                "--y",
+                `${Math.random() * 330 - 165}px`
+            );
+
+            particle.style.animationDelay =
+                `${Math.random() * 0.15}s`;
+
+            particle.style.borderRadius =
+                Math.random() > 0.5 ? "50%" : "2px";
+
+            screen.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 1500);
+        }
+    }
+
+
+    // 数字の抽選アニメーション
+    function playAnimation(finalNumber) {
+
+        let step = 0;
+        let delay = 32;
+
+        numberElement.classList.remove("pop");
+        numberElement.classList.add("spinning");
+
+        function spin() {
+
+            // ランダムな数字を表示
+            numberElement.textContent =
+                Math.floor(Math.random() * 75) + 1;
+
+            step++;
+
+            // 28回転したら結果を表示
+            if (step >= 28) {
+
+                numberElement.textContent = finalNumber;
+
+                numberElement.classList.remove("spinning");
+
+                // 結果を大きく表示
+                numberElement.classList.remove("pop");
+
+                void numberElement.offsetWidth;
+
+                numberElement.classList.add("pop");
+
+                // 画面を光らせる
+                screen.classList.remove("flash");
+
+                void screen.offsetWidth;
+
+                screen.classList.add("flash");
+
+                // 紙吹雪
+                createConfetti();
+
+                // ボタンを再度有効にする
+                nextButton.disabled = false;
+                nextButton.textContent = "次の抽選へ！";
+
+                return;
+            }
+
+            // 徐々に減速
+            delay *= 1.09;
+
+            setTimeout(spin, delay);
+        }
+
+        spin();
+    }
+
+
+    // Flaskから渡された抽選結果
+    const finalNumber = numberElement.dataset.result;
+
+    const shouldAnimate =
+        numberElement.dataset.animate === "true";
+
+
+    // 新しい抽選結果がある場合
+    if (shouldAnimate && finalNumber !== "") {
+
+        nextButton.disabled = true;
+
+        playAnimation(finalNumber);
+
+    } else if (finalNumber === "終了") {
+
+        nextButton.disabled = true;
+        nextButton.textContent = "抽選終了";
+
+    } else if (finalNumber !== "") {
+
+        nextButton.textContent = "次の抽選へ！";
+
+    }
+
+});
+</script>
 
 </body>
 </html>
