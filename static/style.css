@@ -490,18 +490,30 @@ body {
     justify-content: center;
 
     margin-top: 20px;
+    margin-bottom: 8px;
+
+    padding: 0 0 8px;
+
+    overflow: visible;
 }
 
 .spin-btn {
+    display: block;
+
     width: 100%;
     max-width: 350px;
 
+    min-height: 60px;
+
+    margin: 0;
     padding: 15px 18px;
+
+    box-sizing: border-box;
+    line-height: 1.4;
 
     border-radius: 7px;
 
     border: 2px solid #ffe5a0;
-    border-bottom: 5px solid #8d272d;
 
     background:
         linear-gradient(
@@ -519,6 +531,7 @@ body {
     text-shadow: 0 2px #85222a;
 
     box-shadow:
+        0 5px 0 #8d272d,
         0 0 18px #ed364d55;
 
     cursor: pointer;
