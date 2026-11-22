@@ -33,7 +33,19 @@ def index():
         # 数字を出す処理
         if action == 'draw':
 
+            # 前回の抽選結果を履歴に追加
+            pending_num = session.get('pending_num')
+
+            if pending_num is not None:
+                if pending_num not in drawn_num:
+                    drawn_num.append(pending_num)
+
+                session['drawn_num'] = drawn_num
+                session.pop('pending_num', None)
+
+            # 未抽選の数字を取得
             all_num = list(range(min_val, max_val + 1))
+
             mada_num = [
                 n for n in all_num
                 if n not in drawn_num
@@ -45,9 +57,8 @@ def index():
                 # サーバー側で抽選を1回だけ実行
                 current_num = random.choice(mada_num)
 
-                drawn_num.append(current_num)
-
-                session['drawn_num'] = drawn_num
+                # 今回の結果はまだ履歴に追加しない
+                session['pending_num'] = current_num
                 session['current_num'] = current_num
 
                 # ブラウザ側で演出を開始
