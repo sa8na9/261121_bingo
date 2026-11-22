@@ -1,3 +1,4 @@
+
 @charset "UTF-8";
 
 * {
@@ -132,6 +133,8 @@ body {
 /* 数字表示 */
 
 .machine {
+    position: relative;
+
     padding: 8px;
 
     border: 2px solid #c18e42;
@@ -157,6 +160,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    /* レバー用のスペース */
+    margin-right: 80px;
 
     background:
         radial-gradient(
@@ -271,6 +277,174 @@ body {
     100% {
         opacity: 0;
     }
+}
+
+
+/* レバー */
+
+.lever-zone {
+    position: absolute;
+
+    right: 9px;
+    top: 9px;
+    bottom: 9px;
+
+    width: 80px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            90deg,
+            #9b6638,
+            #d8a85a
+        );
+
+    border-left: 1px solid #f1ce7b;
+}
+
+.lever-track {
+    position: relative;
+
+    width: 64px;
+    height: 204px;
+
+    perspective: 500px;
+    perspective-origin: 50% 50%;
+}
+
+/* 棒と球を一体化した可動部分 */
+
+.lever-arm {
+    position: absolute;
+
+    left: 50%;
+    bottom: 20px;
+
+    width: 24px;
+    height: 154px;
+
+    transform: translateX(-50%);
+    transform-origin: 50% 100%;
+
+    transition:
+        transform .56s cubic-bezier(.22, .75, .24, 1);
+
+    z-index: 2;
+
+    transform-style: preserve-3d;
+}
+
+/* レバーの棒 */
+
+.lever-rod {
+    position: absolute;
+
+    left: 50%;
+    top: 18px;
+    bottom: 0;
+
+    width: 12px;
+
+    transform: translateX(-50%);
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #71451d,
+            #ffe6a0 28%,
+            #d39a3e 55%,
+            #75471d
+        );
+
+    border: 1px solid #f8d88a;
+
+    box-shadow:
+        1px 2px 4px #26130d;
+}
+
+/* レバーの球 */
+
+.lever-knob {
+    position: absolute;
+
+    left: 50%;
+    top: 0;
+
+    width: 40px;
+    height: 40px;
+
+    transform: translateX(-50%) translateZ(0);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 32% 25%,
+            #fff1bd 0%,
+            #ffdb83 25%,
+            #c18a35 66%,
+            #694019 100%
+        );
+
+    border: 2px solid #f5d58b;
+
+    box-shadow:
+        0 2px 5px #24120c,
+        0 0 9px #ffdc8a66;
+
+    /* 球を棒より手前に表示 */
+    z-index: 10;
+}
+
+/* 回転軸 */
+
+.pivot {
+    position: absolute;
+
+    left: 50%;
+    bottom: 8px;
+
+    width: 34px;
+    height: 34px;
+
+    transform: translateX(-50%);
+
+    border-radius: 50%;
+
+    border: 4px double #ffe09a;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #ffe8a0,
+            #986126 65%,
+            #4b2b18
+        );
+
+    box-shadow:
+        0 0 5px #21130b;
+
+    z-index: 3;
+}
+
+/* 手前に倒すアニメーション */
+
+.lever-zone.pulled .lever-arm {
+    transform:
+        translateX(-50%)
+        rotateX(-38deg)
+        translateZ(9px);
+}
+
+.lever-zone.pulled .lever-knob {
+    box-shadow:
+        0 5px 9px #24120c,
+        0 0 13px #ffe6a0;
 }
 
 
@@ -673,6 +847,10 @@ body {
 
     .screen {
         min-height: 205px;
+    }
+
+    .lever-zone {
+        width: 70px;
     }
 
 }

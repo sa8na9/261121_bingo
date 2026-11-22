@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -24,62 +25,90 @@
     </div>
 
     <div class="machine">
-        <div class="screen" id="screen">
 
+        <div class="screen" id="screen">
             <div
                 class="number"
                 id="number"
                 data-result="{{ current_num if current_num is not none else '' }}"
                 data-animate="{{ 'true' if animate else 'false' }}"
             >
-                {% if current_num is not none %}
+                {% if animate %}
+                    ？
+                {% elif current_num is not none %}
                     {{ current_num }}
                 {% else %}
                     ？
                 {% endif %}
             </div>
-
         </div>
+
+        <!-- レバー -->
+        <div class="lever-zone" id="lever-zone">
+            <div class="lever-track">
+
+                <div class="lever-arm">
+                    <div class="lever-knob"></div>
+                    <div class="lever-rod"></div>
+                </div>
+
+                <div class="pivot"></div>
+
+            </div>
+        </div>
+
     </div>
 
     <form method="POST" id="draw-form">
+
         <input type="hidden" name="action" value="draw">
 
         <div class="button-container">
             <button
-                type="submit"
+                type="button"
                 class="spin-btn"
                 id="next-button"
             >
-                抽選する！
+                次へ
             </button>
         </div>
+
     </form>
 
     <div class="history-header">
+
         <div class="history-title">抽選履歴</div>
 
         <div class="counter">
             {{ drawn_num|length }} / {{ max_val - min_val + 1 }}
         </div>
+
     </div>
 
     <div class="history-panel">
+
         <div class="history-list">
 
             {% if drawn_num %}
+
                 {% for num in drawn_num|reverse %}
+
                     <span class="chip {% if loop.first %}latest{% endif %}">
                         {{ num }}
                     </span>
+
                 {% endfor %}
+
             {% else %}
+
                 <span class="empty-history">
                     まだ数字はありません
                 </span>
+
             {% endif %}
 
         </div>
+
     </div>
 
     <button
@@ -91,6 +120,7 @@
     </button>
 
     <form method="POST" class="reset-container">
+
         <button
             type="submit"
             name="action"
@@ -99,6 +129,7 @@
         >
             リセット
         </button>
+
     </form>
 
 </div>
@@ -173,10 +204,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const numberElement = document.getElementById("number");
     const screen = document.getElementById("screen");
     const nextButton = document.getElementById("next-button");
+    const drawForm = document.getElementById("draw-form");
+    const lever = document.getElementById("lever-zone");
 
     const overlay = document.getElementById("history-overlay");
     const openHistory = document.getElementById("open-history");
     const closeHistory = document.getElementById("close-history");
+
+    let isBusy = false;
 
 
     // 全履歴を開く
@@ -287,7 +322,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // ボタンを再度有効にする
                 nextButton.disabled = false;
-                nextButton.textContent = "次の抽選へ！";
+                nextButton.textContent = "次へ";
+                isBusy = false;
 
                 return;
             }
@@ -302,6 +338,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    // レバーを引いてから抽選を開始
+    nextButton.addEventListener("click", () => {
+
+        if (isBusy || nextButton.disabled) {
+            return;
+        }
+
+        isBusy = true;
+        nextButton.disabled = true;
+
+        // レバーを手前に倒す
+        lever.classList.add("pulled");
+
+        // レバーを引く演出が終わってから戻す
+        setTimeout(() => {
+
+            lever.classList.remove("pulled");
+
+            // レバーが戻る時間を確保してから送信
+            setTimeout(() => {
+                drawForm.submit();
+            }, 170);
+
+        }, 560);
+
+    });
+
+
     // Flaskから渡された抽選結果
     const finalNumber = numberElement.dataset.result;
 
@@ -312,6 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 新しい抽選結果がある場合
     if (shouldAnimate && finalNumber !== "") {
 
+        isBusy = true;
         nextButton.disabled = true;
 
         playAnimation(finalNumber);
@@ -321,9 +386,9 @@ document.addEventListener("DOMContentLoaded", () => {
         nextButton.disabled = true;
         nextButton.textContent = "抽選終了";
 
-    } else if (finalNumber !== "") {
+    } else {
 
-        nextButton.textContent = "次の抽選へ！";
+        nextButton.textContent = "次へ";
 
     }
 
