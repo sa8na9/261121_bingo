@@ -22,6 +22,9 @@ def index():
     drawn_num = session.get('drawn_num', [])
     current_num = session.get('current_num', None)
 
+    # 抽選演出を実行するかどうか
+    animate = False
+
     # ボタンが押されたときの処理
     if request.method == 'POST':
 
@@ -39,12 +42,16 @@ def index():
             # 数字が残っている場合
             if mada_num:
 
+                # サーバー側で抽選を1回だけ実行
                 current_num = random.choice(mada_num)
 
                 drawn_num.append(current_num)
 
                 session['drawn_num'] = drawn_num
                 session['current_num'] = current_num
+
+                # ブラウザ側で演出を開始
+                animate = True
 
             # すべて引き終わった場合
             else:
@@ -69,7 +76,8 @@ def index():
         current_num=current_num,
         drawn_num=drawn_num,
         min_val=min_val,
-        max_val=max_val
+        max_val=max_val,
+        animate=animate
     )
 
 

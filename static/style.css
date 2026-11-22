@@ -1,7 +1,8 @@
+
 @charset "utf-8";
 
 * {
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     width: auto;
 }
 
@@ -15,6 +16,35 @@
     margin-top: 80px;
     margin-bottom: 80px;
     font-size: 200px;
+    font-weight: bold;
+}
+
+/* 抽選中の数字 */
+.draw.is-spinning {
+    opacity: 0.65;
+    transform: scale(0.95);
+}
+
+/* 最終結果の表示演出 */
+.draw.bingo-pop {
+    animation: bingo-pop 0.55s ease-out;
+}
+
+@keyframes bingo-pop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .next-btn-container {
@@ -26,6 +56,13 @@
     width: 150px;
     height: auto;
     font-size: 50px;
+    cursor: pointer;
+}
+
+/* 抽選演出中のボタン */
+.next-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .sub-title {
@@ -34,17 +71,17 @@
 
 .history {
     display: flex;
-    flex-direction: row-reverse; /* 最新（左）から古（右）へ並べる */
-    justify-content: flex-end;   /* 左詰めで配置 */
-    overflow: hidden;            /* 指定幅を超えた一番右の古い数字を非表示にする */
-    white-space: nowrap;         /* 折り返さず1行に固定 */
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    overflow: hidden;
+    white-space: nowrap;
     gap: 8px;
-    max-width: 100%;             /* 画面や親要素の幅一杯に制限（必要に応じて 300px 等に変更可） */
+    max-width: 100%;
     font-size: 100px;
 }
 
 .history-val {
-    flex-shrink: 0;              /* 数字が潰れないようにサイズを固定 */
+    flex-shrink: 0;
     margin-left: 50px;
     margin-right: 50px;
 }
@@ -55,21 +92,9 @@
     text-align: center;
 }
 
-/* ボタン（summary）のデザインと矢印の非表示化 */
-/* .check-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #6c757d;
-    color: white;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    user-select: none;
-    list-style: none; /* デフォルトの矢印を非表示 (Chrome / Edge / Firefox)
-} */
-
+/* summaryのデフォルト矢印を非表示 */
 .check-btn::-webkit-details-marker {
-    display: none; /* デフォルトの矢印を非表示 (Safari) */
+    display: none;
 }
 
 .check-btn:hover {
@@ -84,7 +109,7 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     max-height: 250px;
-    overflow-y: auto; /* 数字が多くなったら内部スクロール */
+    overflow-y: auto;
 }
 
 /* 数字の並び */

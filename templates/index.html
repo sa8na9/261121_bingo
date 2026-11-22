@@ -1,62 +1,146 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>BINGO大会</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <h1 class="title">🌟BINGO大会🌟</h1>
+
     <div class="container">
-        
+
         <!-- 引いた数値 -->
-        <div class="draw">
-            {% if current_num %}
+        <div
+            class="draw"
+            id="draw-display"
+            data-final="{{ current_num if current_num is not none else '' }}"
+            data-min="{{ min_val }}"
+            data-max="{{ max_val }}"
+            data-animate="{{ 'true' if animate else 'false' }}"
+        >
+            {% if current_num is not none %}
                 {{ current_num }}
             {% else %}
                 -
             {% endif %}
         </div>
 
-        <!-- 数値 -->
-        <form method="POST">
+        <!-- 次の数字を引く -->
+        <form method="POST" id="draw-form">
             <div class="next-btn-container">
-                    <button type="submit" name="action" value="draw" class="next-btn">次</button>
+                <button
+                    type="submit"
+                    name="action"
+                    value="draw"
+                    class="next-btn"
+                    id="next-button"
+                >
+                    次
+                </button>
             </div>
         </form>
 
         <h3 class="sub-title">↓履歴↓</h3>
+
+        <!-- 抽選履歴 -->
         <div class="history">
             {% for num in drawn_num %}
                 <span class="history-val">{{ num }}</span>
             {% endfor %}
         </div>
 
+        <!-- 確認用 -->
         <details class="check-dropdown">
             <summary class="check-btn">確認用</summary>
+
             <div class="check-window">
                 <div class="check-num-list">
-                    <!-- |sort フィルターで数値の小さい順に並び替え -->
+                    <!-- 数字を小さい順に並び替え -->
                     {% for num in drawn_num|sort %}
                         <span class="check-num">{{ num }}</span>
                     {% endfor %}
                 </div>
             </div>
         </details>
-        
 
         <!-- リセット -->
         <form method="POST">
-            <button type="submit" name="action" value="reset" class="reset-btn">
+            <button
+                type="submit"
+                name="action"
+                value="reset"
+                class="reset-btn"
+            >
                 リセット
             </button>
         </form>
 
     </div>
 
+    <script>
+        const display = document.getElementById('draw-display');
+        const nextButton = document.getElementById('next-button');
 
+        // 今回のページ表示で抽選演出を行うか確認
+        if (display.dataset.animate === 'true') {
+
+            const finalNumber = Number(display.dataset.final);
+            const minNumber = Number(display.dataset.min);
+            const maxNumber = Number(display.dataset.max);
+
+            // 数字として正しく取得できた場合のみ演出する
+            if (Number.isFinite(finalNumber)) {
+
+                // 演出中はボタンを無効化
+                nextButton.disabled = true;
+
+                display.classList.add('is-spinning');
+
+                let count = 0;
+
+                const totalSteps = 28;
+                let delay = 35;
+
+                function spin() {
+
+                    // 仮の数字をランダムに表示
+                    const randomNumber =
+                        Math.floor(
+                            Math.random() * (maxNumber - minNumber + 1)
+                        ) + minNumber;
+
+                    display.textContent = randomNumber;
+
+                    count++;
+
+                    // 最後まで到達したら抽選結果を表示
+                    if (count >= totalSteps) {
+
+                        display.textContent = finalNumber;
+
+                        display.classList.remove('is-spinning');
+                        display.classList.add('bingo-pop');
+
+                        nextButton.disabled = false;
+
+                        return;
+                    }
+
+                    // 徐々に減速させる
+                    delay *= 1.09;
+
+                    setTimeout(spin, delay);
+                }
+
+                // 演出開始
+                spin();
+            }
+        }
+    </script>
 
 </body>
 </html>
